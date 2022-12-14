@@ -1,0 +1,12 @@
+spring:
+  data:
+    mongodb:
+      auto-index-creation: 'true'
+      authentication-database: admin
+      username: rootuser
+      database: pgx-app-db
+      password: rootpass
+      port: '27017'
+      host: localhost
+    redis:
+      password: redispass
