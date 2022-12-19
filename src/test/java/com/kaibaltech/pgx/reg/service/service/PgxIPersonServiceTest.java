@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PgxIPersonServiceTest {
@@ -114,12 +114,14 @@ class PgxIPersonServiceTest {
         when(repository.checkEmailExists(person.getEmailAddress()))
                 .thenReturn(Optional.ofNullable(person));
 
-        //then
+
         PersonServiceBusinessException exception =
                 assertThrows(PersonServiceBusinessException.class,
                         () -> service.createNewPerson(personDTO));
 
+        //then
         assertEquals("Email already exist", exception.getMessage());
+        verify(repository, never()).save(any(PgxIPerson.class));
     }
 
     @DisplayName("test for null person")
