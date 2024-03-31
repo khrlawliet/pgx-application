@@ -9,5 +9,7 @@ public interface PgxIPersonService {
 
     List<PgxIPersonResponseDTO> getAllPersons();
 
+    PgxIPersonResponseDTO getPersonById(String id);
+
     PgxIPersonResponseDTO createNewPerson(PgxIPersonRequestDTO requestDTO);
 }

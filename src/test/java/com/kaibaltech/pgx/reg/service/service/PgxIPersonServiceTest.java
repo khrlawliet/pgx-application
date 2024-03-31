@@ -3,6 +3,7 @@ package com.kaibaltech.pgx.reg.service.service;
 import com.kaibaltech.pgx.reg.service.dto.PgxIPersonRequestDTO;
 import com.kaibaltech.pgx.reg.service.dto.PgxIPersonResponseDTO;
 import com.kaibaltech.pgx.reg.service.entity.PgxIPerson;
+import com.kaibaltech.pgx.reg.service.exception.PersonNotFoundException;
 import com.kaibaltech.pgx.reg.service.exception.PersonServiceBusinessException;
 import com.kaibaltech.pgx.reg.service.repository.PgxIPersonRepository;
 import com.mongodb.MongoException;
@@ -75,6 +76,19 @@ class PgxIPersonServiceTest {
         assertThat(personList).isNotEmpty();
     }
 
+    @DisplayName("test for getPersonById method")
+    @Test
+    void shouldGetPersonById() {
+        // given
+        given(repository.findById("1")).willReturn(Optional.of(person));
+
+        // when
+        PgxIPersonResponseDTO expected = service.getPersonById("1");
+
+        // then
+        assertThat(expected).isNotNull();
+    }
+
     @DisplayName("test for db connection failure while fetching person list")
     @Test
     void shouldFailWhenFetchHavingDbIssue() {
@@ -138,5 +152,20 @@ class PgxIPersonServiceTest {
 
         assertThat(exception.getMessage())
                 .contains("Exception occurred while create a new person");
+    }
+
+    @DisplayName("test for finding not registered person")
+    @Test
+    void shouldFailWhenPersonIsNotFound() {
+        // given
+        given(repository.findById("1")).willReturn(Optional.empty());
+
+        // then
+        PersonNotFoundException exception =
+                assertThrows(PersonNotFoundException.class,
+                        () -> service.getPersonById("1"));
+
+        assertThat(exception.getMessage())
+                .contains("Exception occurred while fetch person by id from Database");
     }
 }

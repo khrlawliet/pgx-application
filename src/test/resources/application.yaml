@@ -3,9 +3,9 @@ spring:
     mongodb:
       auto-index-creation: 'true'
       authentication-database: admin
-      username: rootuser
+#      username: rootuser
       database: pgx-app-db
-      password: rootpass
+#      password: rootpass
       port: '27017'
       host: localhost
     redis:

@@ -3,9 +3,10 @@ package com.kaibaltech.pgx.reg.service.service;
 import com.kaibaltech.pgx.reg.service.dto.PgxIPersonRequestDTO;
 import com.kaibaltech.pgx.reg.service.dto.PgxIPersonResponseDTO;
 import com.kaibaltech.pgx.reg.service.entity.PgxIPerson;
+import com.kaibaltech.pgx.reg.service.exception.PersonNotFoundException;
 import com.kaibaltech.pgx.reg.service.exception.PersonServiceBusinessException;
 import com.kaibaltech.pgx.reg.service.repository.PgxIPersonRepository;
-import com.kaibaltech.pgx.reg.service.util.ValueMapper;
+import com.kaibaltech.pgx.reg.service.util.JsonUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -39,13 +40,26 @@ public class PgxIPersonServiceImpl implements PgxIPersonService {
     }
 
     @Override
+    public PgxIPersonResponseDTO getPersonById(String id) {
+        log.info("PgxIPersonServiceImpl:getPersonById execution started.");
+        try {
+            PgxIPerson person = repository.findById(id)
+                    .orElseThrow(() -> new PersonNotFoundException("Person not found"));
+            return convertToDTO(person);
+        } catch (RuntimeException ex) {
+            log.error("Exception occurred while retrieving person from database, Exception message {}", ex.getMessage());
+            throw new PersonNotFoundException("Exception occurred while fetch person by id from Database");
+        }
+    }
+
+    @Override
     public PgxIPersonResponseDTO createNewPerson(PgxIPersonRequestDTO requestDTO) {
         if (checkEmailExists(requestDTO))
             throw new PersonServiceBusinessException("Email already exist");
         try {
             log.info("PgxIPersonServiceImpl:createNewPerson execution started.");
             PgxIPerson person = convertToEntity(requestDTO);
-            log.debug("PgxIPersonServiceImpl:createNewPerson request parameters {}", ValueMapper.jsonAsString(requestDTO));
+            log.debug("PgxIPersonServiceImpl:createNewPerson request parameters {}", JsonUtil.toJson(requestDTO));
 
             PgxIPerson personResult = repository.save(person);
             return convertToDTO(personResult);

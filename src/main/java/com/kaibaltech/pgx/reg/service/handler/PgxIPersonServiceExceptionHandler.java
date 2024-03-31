@@ -49,7 +49,7 @@ public class PgxIPersonServiceExceptionHandler {
 
     @ExceptionHandler(PersonNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public APIResponse<Object> handleProductNotFoundException(
+    public APIResponse<Object> handlePersonNotFoundException(
             PersonNotFoundException exception) {
         return APIResponse
                 .builder()
